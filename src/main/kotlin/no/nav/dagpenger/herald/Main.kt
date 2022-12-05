@@ -14,7 +14,7 @@ fun main() {
     val env = System.getenv()
     val beskjedTopic by lazy {
         jsonTopic(
-            createProducer(aivenKafka.producerConfig(Properties())),
+            createProducer(aivenKafka.producerConfig(stringProducerConfig)),
             config[tms_utkast_topic]
         )
     }
