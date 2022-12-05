@@ -9,7 +9,6 @@ import java.util.Properties
 
 internal val config = EnvironmentVariables() overriding
     systemProperties()
-
 internal val stringProducerConfig = Properties().apply {
     put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)
     put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, StringSerializer::class.java)

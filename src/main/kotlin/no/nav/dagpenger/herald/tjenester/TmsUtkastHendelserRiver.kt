@@ -35,10 +35,6 @@ internal class TmsUtkastHendelserRiver(
         val logger = KotlinLogging.logger { }
     }
 
-    /**
-     * SøknadEndretTilstandEvent
-     * tilstand: Påbegynt / Innsendt / Slettet
-     */
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
         val søknadId = packet["søknad_uuid"].asUUID()
         val tilstand = packet["gjeldendeTilstand"].asText()
