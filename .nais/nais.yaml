@@ -21,4 +21,4 @@ spec:
     - name: SOKNAD_URL
       value: {{soknad.url}}
     - name: TMS_UTKAST_TOPIC
-      value: min-side-utkast-iac-topic
+      value: min-side.aapen-utkast-v1
