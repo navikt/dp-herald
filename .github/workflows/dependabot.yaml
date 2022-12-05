@@ -7,7 +7,6 @@ permissions:
 jobs:
   dependabot:
     runs-on: ubuntu-latest
-    if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
@@ -20,12 +19,14 @@ jobs:
           arguments: --configuration-cache test
 
       - name: Dependabot metadata
+        if: ${{ github.actor == 'dependabot[bot]' }}
         id: metadata
         uses: dependabot/fetch-metadata@v1.1.1
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
 
       - name: Approve the PR
+        if: ${{ github.actor == 'dependabot[bot]' }}
         run: gh pr review --approve "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}

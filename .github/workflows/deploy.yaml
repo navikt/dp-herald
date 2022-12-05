@@ -1,6 +1,9 @@
 name: Build and deploy
 
-on: [ push ]
+on:
+  push:
+    branches-ignore:
+      - 'dependabot/**'
 
 env:
   IMAGE: ghcr.io/${{ github.repository }}:${{ github.sha }}
@@ -9,7 +12,6 @@ jobs:
   build:
     name: build
     runs-on: ubuntu-latest
-    if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-java@v3
