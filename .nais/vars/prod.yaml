@@ -1,0 +1,4 @@
+kafka:
+  pool: nav-prod
+soknad:
+  url: https://www.nav.no/dagpenger/dialog/soknad/

@@ -1,0 +1,24 @@
+apiVersion: "nais.io/v1alpha1"
+kind: "Application"
+metadata:
+  name: dp-herald
+  namespace: teamdagpenger
+  labels:
+    team: teamdagpenger
+spec:
+  image: {{image}}
+  kafka:
+    pool: {{kafka.pool}}
+  secureLogs:
+    enabled: true
+  env:
+    - name: KAFKA_CONSUMER_GROUP_ID
+      value: dp-herald
+    - name: KAFKA_RAPID_TOPIC
+      value: teamdagpenger.rapid.v1
+    - name: KAFKA_RESET_POLICY
+      value: earliest
+    - name: SOKNAD_URL
+      value: {{soknad.url}}
+    - name: TMS_UTKAST_TOPIC
+      value: min-side-utkast-iac-topic
