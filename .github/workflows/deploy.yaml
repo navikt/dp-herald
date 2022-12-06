@@ -46,17 +46,19 @@ jobs:
         with:
           report_paths: '**/build/test-results/test/TEST-*.xml'
 
-  deploy-dev:
-    name: Deploy to dev
+  deploy:
     needs: [ build ]
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        env: [ dev, prod ]
     steps:
       - uses: actions/checkout@v3
       - uses: nais/deploy/actions/deploy@v1
         env:
           APIKEY: ${{ secrets.NAIS_DEPLOY_APIKEY }}
-          CLUSTER: dev-gcp
+          CLUSTER: ${{ matrix.env }}-gcp
           RESOURCE: .nais/nais.yaml
-          VARS: .nais/vars/dev.yaml
+          VARS: .nais/vars/${{ matrix.env }}.yaml
           PRINT_PAYLOAD: true
