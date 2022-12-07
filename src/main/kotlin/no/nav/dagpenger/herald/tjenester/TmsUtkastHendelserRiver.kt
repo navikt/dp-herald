@@ -7,6 +7,7 @@ import mu.KotlinLogging
 import mu.withLoggingContext
 import no.nav.dagpenger.herald.config
 import no.nav.dagpenger.herald.kafka.Topic
+import no.nav.dagpenger.herald.tjenester.SøknadEndretTilstand.Companion.validate
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.MessageContext
 import no.nav.helse.rapids_rivers.RapidsConnection
@@ -26,8 +27,7 @@ internal class TmsUtkastHendelserRiver(
 ) : River.PacketListener {
     init {
         River(rapidsConnection).apply {
-            validate { it.demandValue("@event_name", "søknad_endret_tilstand") }
-            validate { it.requireKey("søknad_uuid", "ident", "gjeldendeTilstand") }
+            validate { it.validate() }
         }.register(this)
     }
 
@@ -60,7 +60,10 @@ class SøknadEndretTilstand(packet: JsonMessage) {
     private val tittel = "Søknad om dagpenger"
     private val link = søknadUrl.resolve("${søknadUrl.path}/$søknadId")
     private val tilstand = packet["gjeldendeTilstand"].asText()
+    private val prosessnavn = packet["prosessnavn"].asText()
     val nøkkel get() = søknadId.toString()
+
+    fun skalPubliseres() = tilstand != "Påbegynt" || prosessnavn == "Dagpenger"
 
     private fun jsonBuilder() = UtkastJsonBuilder().apply {
         withUtkastId(søknadId.toString())
@@ -77,11 +80,17 @@ class SøknadEndretTilstand(packet: JsonMessage) {
             else -> throw IllegalArgumentException("Ukjent tilstand på søknad")
         }
 
-    private companion object {
-        val søknadUrl: URI
+    companion object {
+        private val søknadUrl: URI
             get() = URI(config[soknad_url]).also {
                 require(it.isAbsolute) { "URL til søknad må være absolutt" }
             }
+
+        fun JsonMessage.validate() {
+            demandValue("@event_name", "søknad_endret_tilstand")
+            requireKey("søknad_uuid", "ident", "gjeldendeTilstand")
+            interestedIn("prosessnavn")
+        }
     }
 }
 

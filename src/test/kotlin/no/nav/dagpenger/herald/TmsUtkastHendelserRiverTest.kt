@@ -1,6 +1,8 @@
 package no.nav.dagpenger.herald
 
 import no.nav.dagpenger.herald.helpers.TestTopic
+import no.nav.dagpenger.herald.tjenester.SøknadEndretTilstand
+import no.nav.dagpenger.herald.tjenester.SøknadEndretTilstand.Companion.validate
 import no.nav.dagpenger.herald.tjenester.TmsUtkastHendelserRiver
 import no.nav.dagpenger.herald.tjenester.soknad_url
 import no.nav.helse.rapids_rivers.JsonMessage
@@ -8,6 +10,8 @@ import no.nav.helse.rapids_rivers.testsupport.TestRapid
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.params.ParameterizedTest
+import org.junit.jupiter.params.provider.CsvSource
 import java.util.UUID
 import kotlin.test.assertContains
 import kotlin.test.assertEquals
@@ -54,14 +58,28 @@ internal class TmsUtkastHendelserRiverTest {
             assertTrue(message(0).has("utkastId"))
         }
     }
+
+    @ParameterizedTest(name = "{0} av {1} skal sendes: {2}")
+    @CsvSource(
+        "Påbegynt, Dagpenger, true",
+        "Innsendt, Dagpenger, true",
+        "Slettet, Dagpenger, true",
+        "Påbegynt, Generell, false",
+        "Innsendt, Generell, true",
+        "Slettet, Generell, true"
+    )
+    fun `sjekk om pakken skal publisers`(tilstand: String, navn: String, skalSendes: Boolean) {
+        assertEquals(skalSendes, SøknadEndretTilstand(tilstandEndret(tilstand, navn)).skalPubliseres())
+    }
 }
 
-private fun tilstandEndret(tilstand: String) = JsonMessage.newMessage(
+private fun tilstandEndret(tilstand: String, prosessnavn: String? = null) = JsonMessage.newMessage(
     "søknad_endret_tilstand",
-    mapOf(
+    listOfNotNull(
         "ident" to "12312312312",
         "søknad_uuid" to UUID.randomUUID(),
         "forrigeTilstand" to "Opprettet",
-        "gjeldendeTilstand" to tilstand
-    )
-)
+        "gjeldendeTilstand" to tilstand,
+        prosessnavn?.let { "prosessnavn" to prosessnavn }
+    ).toMap()
+).apply { this.validate() }

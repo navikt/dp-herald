@@ -19,6 +19,8 @@ dependencies {
     implementation("com.natpryce:konfig:1.6.10.0")
 
     implementation("com.github.navikt:tms-utkast:20221202105132-7dd3f10")
+
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
 }
 
 tasks.test {
