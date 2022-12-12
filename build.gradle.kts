@@ -18,7 +18,7 @@ dependencies {
     implementation("io.github.microutils:kotlin-logging:3.0.4")
     implementation("com.natpryce:konfig:1.6.10.0")
 
-    implementation("com.github.navikt:tms-utkast:20221202105132-7dd3f10")
+    implementation("com.github.navikt:tms-utkast:20221208152503-d9cba4c")
 
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
 }
