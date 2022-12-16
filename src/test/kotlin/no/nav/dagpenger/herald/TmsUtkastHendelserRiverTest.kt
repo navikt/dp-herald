@@ -2,8 +2,8 @@ package no.nav.dagpenger.herald
 
 import no.nav.dagpenger.herald.helpers.TestTopic
 import no.nav.dagpenger.herald.tjenester.SøknadEndretTilstand
-import no.nav.dagpenger.herald.tjenester.SøknadEndretTilstand.Companion.validate
 import no.nav.dagpenger.herald.tjenester.TmsUtkastHendelserRiver
+import no.nav.dagpenger.herald.tjenester.TmsUtkastHendelserRiver.Companion.validate2
 import no.nav.dagpenger.herald.tjenester.soknad_url
 import no.nav.helse.rapids_rivers.JsonMessage
 import no.nav.helse.rapids_rivers.testsupport.TestRapid
@@ -36,7 +36,8 @@ internal class TmsUtkastHendelserRiverTest {
 
     @Test
     fun `skal publisere opprettet`() {
-        rapid.sendTestMessage(tilstandEndret("Påbegynt").toJson())
+        rapid.sendTestMessage(tilstandEndret("Påbegynt", "Dagpenger").toJson())
+        rapid.sendTestMessage(tilstandEndret("Påbegynt", "Innsending").toJson())
 
         with(topic.inspektør) {
             assertEquals(1, size)
@@ -64,9 +65,9 @@ internal class TmsUtkastHendelserRiverTest {
         "Påbegynt, Dagpenger, true",
         "Innsendt, Dagpenger, true",
         "Slettet, Dagpenger, true",
-        "Påbegynt, Generell, false",
-        "Innsendt, Generell, true",
-        "Slettet, Generell, true"
+        "Påbegynt, Innsending, false",
+        "Innsendt, Innsending, true",
+        "Slettet, Innsending, true"
     )
     fun `sjekk om pakken skal publisers`(tilstand: String, navn: String, skalSendes: Boolean) {
         assertEquals(skalSendes, SøknadEndretTilstand(tilstandEndret(tilstand, navn)).skalPubliseres())
@@ -82,4 +83,4 @@ private fun tilstandEndret(tilstand: String, prosessnavn: String? = null) = Json
         "gjeldendeTilstand" to tilstand,
         prosessnavn?.let { "prosessnavn" to prosessnavn }
     ).toMap()
-).apply { this.validate() }
+).apply { this.validate2() }

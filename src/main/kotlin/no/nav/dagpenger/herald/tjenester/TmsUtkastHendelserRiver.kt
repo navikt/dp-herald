@@ -31,8 +31,13 @@ internal class TmsUtkastHendelserRiver(
         }.register(this)
     }
 
-    private companion object {
-        val logger = KotlinLogging.logger { }
+    companion object {
+        private val logger = KotlinLogging.logger { }
+        fun JsonMessage.validate2() {
+            demandValue("@event_name", "søknad_endret_tilstand")
+            requireKey("søknad_uuid", "ident", "gjeldendeTilstand")
+            interestedIn("prosessnavn")
+        }
     }
 
     override fun onPacket(packet: JsonMessage, context: MessageContext) {
@@ -43,9 +48,10 @@ internal class TmsUtkastHendelserRiver(
             "søknad_uuid" to søknadId.toString(),
             "tilstand" to tilstand
         ) {
-            logger.info { "Informerer tms-utkast om endringer" }
             val utkast = SøknadEndretTilstand(packet)
+            if (!utkast.skalPubliseres()) return.also { logger.info { "Denne endringen skal ikke til utkast" } }
 
+            logger.info { "Informerer tms-utkast om endringer" }
             utkastTopic.publiser(
                 utkast.nøkkel,
                 utkast.utkastJson
