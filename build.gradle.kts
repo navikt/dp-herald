@@ -20,7 +20,7 @@ dependencies {
 
     implementation("com.github.navikt:tms-utkast:20221202105132-7dd3f10")
 
-    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.0")
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.2")
 }
 
 tasks.test {
